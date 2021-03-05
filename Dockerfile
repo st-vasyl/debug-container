@@ -31,6 +31,10 @@ RUN apt-get update && \
             vim \
             jq \
             less \
+            htop \
+            nmap \
+            net-tools \
+            telnet \
             iproute2 \
             iputils-ping \
             libapr1 \
@@ -87,7 +91,7 @@ RUN curl -sSL "https://github.com/bojand/ghz/releases/download/v${GHZ_VERSION}/g
 RUN wget -qO /usr/local/bin/grpc_health_probe https://github.com/grpc-ecosystem/grpc-health-probe/releases/download/v${GRPC_HEALTH_PROBE_VERSION}/grpc_health_probe-linux-amd64 && \
     chmod +x /usr/local/bin/grpc_health_probe
 
-ADD https://raw.githubusercontent.com/grpc/grpc-proto/master/grpc/health/v1/health.proto /tmp/ghz/health.proto
+ADD --chown=debug:debug https://raw.githubusercontent.com/grpc/grpc-proto/master/grpc/health/v1/health.proto /tmp/health.proto
 
 WORKDIR /home/debug
 USER debug
