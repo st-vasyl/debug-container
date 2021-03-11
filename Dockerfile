@@ -20,6 +20,7 @@ RUN apt-get update && \
             git \
             zlib1g-dev \
             software-properties-common \
+            gnupg \
             gnupg2 \
             libstdc++6 \
             gcc \
@@ -90,6 +91,10 @@ RUN curl -sSL "https://github.com/bojand/ghz/releases/download/v${GHZ_VERSION}/g
 
 RUN wget -qO /usr/local/bin/grpc_health_probe https://github.com/grpc-ecosystem/grpc-health-probe/releases/download/v${GRPC_HEALTH_PROBE_VERSION}/grpc_health_probe-linux-amd64 && \
     chmod +x /usr/local/bin/grpc_health_probe
+
+RUN wget -qO - https://www.mongodb.org/static/pgp/server-4.4.asc | apt-key add - && \
+    echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu focal/mongodb-org/4.4 multiverse" | tee /etc/apt/sources.list.d/mongodb-org-4.4.list && \
+    apt-get update && apt-get -y install mongodb-org-shell mongodb-org-tools
 
 ADD --chown=debug:debug https://raw.githubusercontent.com/grpc/grpc-proto/master/grpc/health/v1/health.proto /tmp/health.proto
 
