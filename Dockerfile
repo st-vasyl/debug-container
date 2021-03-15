@@ -34,6 +34,7 @@ RUN apt-get update && \
             less \
             htop \
             nmap \
+            netcat \
             net-tools \
             telnet \
             iproute2 \
