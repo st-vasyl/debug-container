@@ -97,6 +97,12 @@ RUN wget -qO - https://www.mongodb.org/static/pgp/server-4.4.asc | apt-key add -
     echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu focal/mongodb-org/4.4 multiverse" | tee /etc/apt/sources.list.d/mongodb-org-4.4.list && \
     apt-get update && apt-get -y install mongodb-org-shell mongodb-org-tools
 
+### Install Vault and Consul
+RUN curl -fsSL https://apt.releases.hashicorp.com/gpg | apt-key add - && \
+    apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main" && \
+    apt-get install vault consul && \
+    rm -rf /var/cache/apt/*
+
 ADD --chown=debug:debug https://raw.githubusercontent.com/grpc/grpc-proto/master/grpc/health/v1/health.proto /tmp/health.proto
 
 WORKDIR /home/debug
