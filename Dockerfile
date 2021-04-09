@@ -34,6 +34,7 @@ RUN apt-get update && \
             less \
             htop \
             nmap \
+            dnsutils \
             netcat \
             net-tools \
             telnet \
