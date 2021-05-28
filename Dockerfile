@@ -37,6 +37,7 @@ RUN apt-get update && \
             dnsutils \
             netcat \
             net-tools \
+            s3cmd \
             telnet \
             iproute2 \
             iputils-ping \
@@ -54,7 +55,7 @@ RUN apt-get update && \
             libc6-dev && \
     rm -rf /var/cache/apt/*
 
-RUN pip3 install python-hglib requests pika hvac ansible python-consul openshift
+RUN pip3 install python-hglib requests pika hvac ansible python-consul openshift boto3 requests_aws4auth
 
 RUN groupadd --gid 1000 debug && \
     adduser --gid 1000 --uid 1000 --disabled-password --system --home /home/debug debug && \
