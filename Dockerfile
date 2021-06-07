@@ -38,6 +38,7 @@ RUN apt-get update && \
             netcat \
             net-tools \
             s3cmd \
+            groff \
             telnet \
             iproute2 \
             iputils-ping \
