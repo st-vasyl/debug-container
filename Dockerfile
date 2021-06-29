@@ -37,6 +37,7 @@ RUN apt-get update && \
             dnsutils \
             netcat \
             net-tools \
+            mysql-client \
             s3cmd \
             groff \
             telnet \
