@@ -38,6 +38,7 @@ RUN apt-get update && \
             netcat \
             net-tools \
             mysql-client \
+            redis-tools \
             s3cmd \
             groff \
             telnet \
