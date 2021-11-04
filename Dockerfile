@@ -3,11 +3,10 @@ LABEL MAINTAINER "Vasyl Stetsuryn <vasyl@vasyl.org"
 
 ENV DEBIAN_FRONTEND noninteractive
 ENV TZ Etc/UTC
-ENV CONSUL_VERSION 1.9.3
-ENV HELM_VERSION 3.5.2
-ENV GRPCURL_VERSION 1.8.0
-ENV GHZ_VERSION 0.93.0
-ENV GRPC_HEALTH_PROBE_VERSION 0.3.6
+ENV HELM_VERSION 3.7.1
+ENV GRPCURL_VERSION 1.8.5
+ENV GHZ_VERSION 0.105.0
+ENV GRPC_HEALTH_PROBE_VERSION 0.4.6
 
 RUN apt-get update && \
     apt-get -y install sudo \
@@ -74,12 +73,6 @@ RUN curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add 
 RUN wget "https://get.helm.sh/helm-v${HELM_VERSION}-linux-amd64.tar.gz" -O /tmp/helm.tar.gz && \
     tar zxfv /tmp/helm.tar.gz -C /tmp/ && \
     mv /tmp/linux-amd64/helm /usr/local/bin/helm
-
-### Install consul binary
-RUN wget "https://releases.hashicorp.com/consul/${CONSUL_VERSION}/consul_${CONSUL_VERSION}_linux_amd64.zip" -O /tmp/consul.zip && \
-    unzip /tmp/consul.zip -d /tmp && \
-    mv /tmp/consul /usr/local/bin/consul && \
-    chown root:root /usr/local/bin/consul
 
 ### Install AWS CLI
 RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" && \
