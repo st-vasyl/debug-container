@@ -35,6 +35,7 @@ RUN apt-get update && \
             nmap \
             dnsutils \
             netcat \
+            kafkacat \
             net-tools \
             mysql-client \
             redis-tools \
