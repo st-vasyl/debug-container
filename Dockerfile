@@ -1,12 +1,12 @@
-FROM ubuntu:latest
+FROM ubuntu:focal
 LABEL MAINTAINER "Vasyl Stetsuryn <vasyl@vasyl.org"
 
 ENV DEBIAN_FRONTEND noninteractive
 ENV TZ Etc/UTC
-ENV HELM_VERSION 3.7.1
-ENV GRPCURL_VERSION 1.8.5
-ENV GHZ_VERSION 0.105.0
-ENV GRPC_HEALTH_PROBE_VERSION 0.4.6
+ENV HELM_VERSION 3.9.0
+ENV GRPCURL_VERSION 1.8.6
+ENV GHZ_VERSION 0.109.0
+ENV GRPC_HEALTH_PROBE_VERSION 0.4.11
 
 RUN apt-get update && \
     apt-get -y install sudo \
@@ -92,8 +92,8 @@ RUN curl -sSL "https://github.com/bojand/ghz/releases/download/v${GHZ_VERSION}/g
 RUN wget -qO /usr/local/bin/grpc_health_probe https://github.com/grpc-ecosystem/grpc-health-probe/releases/download/v${GRPC_HEALTH_PROBE_VERSION}/grpc_health_probe-linux-amd64 && \
     chmod +x /usr/local/bin/grpc_health_probe
 
-RUN wget -qO - https://www.mongodb.org/static/pgp/server-4.4.asc | apt-key add - && \
-    echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu focal/mongodb-org/4.4 multiverse" | tee /etc/apt/sources.list.d/mongodb-org-4.4.list && \
+RUN wget -qO - https://www.mongodb.org/static/pgp/server-5.0.asc | apt-key add - && \
+    echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu focal/mongodb-org/5.0 multiverse" | tee /etc/apt/sources.list.d/mongodb-org-5.0.list && \
     apt-get update && apt-get -y install mongodb-org-shell mongodb-org-tools
 
 ### Install Vault and Consul
