@@ -1,6 +1,6 @@
 # Debug container
 
-This repository consits of docker image with a bunch of tools to make easier debuging process in Kubernetes clusters. 
+This repository consits of docker image with a bunch of tools to make easier debuging processes in Kubernetes clusters. There're `amd64` and `arm64` architectures available on the same image tag. 
 
 ## Software list
 
@@ -43,7 +43,7 @@ Other:
 
 The most common workflow is to run 
 ```bash
-kubectl run debug-container --image-pull-policy=Always --image=madguru/debug-container:latest --restart=Never -- sleep 1d
+kubectl run debug-container --image-pull-policy=Always --image=stvasyl/debug-container:latest --restart=Never -- sleep 1d
 ```
 
 When pod become started
@@ -51,7 +51,7 @@ When pod become started
 kubectl exec --container debug-container -ti debug-container -- /bin/bash
 ```
 
-You also may add `--serviceaccount=serviceaccount-name` to debug serviceaccount related issues.
+You also may add `--overrides='{"spec":{"serviceAccountName":"'serviceaccount-name'"}}'` to debug serviceaccount related issues.
 
 
 In case if you need to add securityContext with capabilities try to use template like this:
@@ -65,7 +65,7 @@ spec:
   restartPolicy: Never
   containers:
     - name: debug-container
-      image: "madguru/debug-container:latest"
+      image: "stvasyl/debug-container:latest"
       imagePullPolicy: Always
       command:
         - /bin/sleep
