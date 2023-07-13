@@ -5,10 +5,10 @@ ARG TARGETARCH
 ARG TARGETPLATFORM
 ENV DEBIAN_FRONTEND noninteractive
 ENV TZ Etc/UTC
-ENV HELM_VERSION 3.11.0
+ENV HELM_VERSION 3.12.0
 ENV GRPCURL_VERSION 1.8.7
-ENV GHZ_VERSION 0.112.0-pre.1
-ENV GRPC_HEALTH_PROBE_VERSION 0.4.15
+ENV GHZ_VERSION 0.117.0
+ENV GRPC_HEALTH_PROBE_VERSION 0.4.19
 
 RUN apt update && \
     apt -y install sudo \
@@ -92,7 +92,7 @@ RUN wget -qO /usr/local/bin/grpc_health_probe https://github.com/grpc-ecosystem/
 ### Install MongoDB client
 RUN curl -fsSL https://www.mongodb.org/static/pgp/server-6.0.asc|sudo gpg --dearmor -o /etc/apt/trusted.gpg.d/mongodb-6.gpg && \
     echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu jammy/mongodb-org/6.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org.list && \
-    apt update && apt -y install mongodb-org-shell mongodb-org-tools
+    apt update && apt -y install mongodb-org-shell mongodb-org-tools mongodb-atlas mongodb-mongosh
 
 ### Install Vault and Consul
 RUN curl -fsSL https://apt.releases.hashicorp.com/gpg | apt-key add - && \
