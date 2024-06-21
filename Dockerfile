@@ -9,6 +9,7 @@ ENV HELM_VERSION 3.15.2
 ENV GRPCURL_VERSION 1.9.1
 ENV GHZ_VERSION 0.120.0
 ENV GRPC_HEALTH_PROBE_VERSION 0.4.28
+ENV KUBECTL_VERSION 1.30.2
 
 RUN apt update && \
     apt -y install sudo \
@@ -66,10 +67,9 @@ RUN groupadd --gid 1000 debug && \
     echo "debug ALL=(ALL:ALL) NOPASSWD:ALL" >> /etc/sudoers
 
 ### Install kubectl
-RUN curl -fsSL https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-archive-keyring.gpg && \
-    echo "deb [signed-by=/etc/apt/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee /etc/apt/sources.list.d/kubernetes.list && \
-    apt update && apt install -y kubectl && \
-    rm -rf /var/cache/apt/*
+### Lastest stable version is here https://cdn.dl.k8s.io/release/stable.txt
+RUN wget -qO /usr/local/bin/kubectl "https://dl.k8s.io/release/v${KUBECTL_VERSION}/bin/linux/${TARGETARCH}/kubectl" && \
+    chmod +x /usr/local/bin/kubectl
 
 ### Install helm
 RUN wget "https://get.helm.sh/helm-v${HELM_VERSION}-linux-${TARGETARCH}.tar.gz" -O /tmp/helm.tar.gz && \

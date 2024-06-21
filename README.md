@@ -74,11 +74,11 @@ spec:
         capabilities:
           add:
             - IPC_LOCK # add more if you need
-    resources:
-      limits:
-        cpu: 200m
-        memory: 256Mi
-      requests:
-        cpu: 100m
-        memory: 128Mi
+      resources:
+        limits:
+          cpu: 200m
+          memory: 256Mi
+        requests:
+          cpu: 100m
+          memory: 128Mi
 ```
