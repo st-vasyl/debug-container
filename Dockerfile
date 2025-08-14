@@ -12,10 +12,13 @@ ENV GRPC_HEALTH_PROBE_VERSION 0.4.40
 ENV KUBECTL_VERSION 1.33.4
 
 RUN apt update && \
+    apt install software-properties-common && \
+    add-apt-repository --yes --update ppa:ansible/ansible && \
     apt -y install sudo \
-            python3 \
+            python3-full \
             python3-dev \
             python3-pip \
+            ansible \
             apt-transport-https \
             ca-certificates \
             curl \
@@ -58,9 +61,8 @@ RUN apt update && \
             libffi-dev \
             libssl-dev \
             libc6-dev && \
-    rm -rf /var/cache/apt/*
-
-RUN pip3 install python-hglib requests pika hvac ansible python-consul openshift boto3 requests_aws4auth awscli
+    rm -rf /var/cache/apt/* && \
+    snap install aws-cli --classic
 
 RUN groupadd --gid 1000 debug && \
     adduser --gid 1000 --uid 1000 --disabled-password --system --home /home/debug debug && \
