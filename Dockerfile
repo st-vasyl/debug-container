@@ -61,8 +61,7 @@ RUN apt update && \
             libffi-dev \
             libssl-dev \
             libc6-dev && \
-    rm -rf /var/cache/apt/* && \
-    snap install aws-cli --classic
+    rm -rf /var/cache/apt/*
 
 RUN groupadd --gid 1000 debug && \
     adduser --gid 1000 --uid 1000 --disabled-password --system --home /home/debug debug && \
@@ -111,6 +110,11 @@ RUN curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings
     tee /etc/apt/sources.list.d/docker.list > /dev/null && \
     apt update && \
     apt install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+
+### Install aws cli
+RUN wget "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -O /tmp/awscliv2.zip && \
+    unzip /tmp/awscliv2.zip -d /tmp/ && \
+    /tmp/aws/install -i /usr/local/aws-cli -b /usr/local/bin
 
 ### Install gcloud cli
 RUN curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | gpg --dearmor -o /usr/share/keyrings/cloud.google.gpg && \
