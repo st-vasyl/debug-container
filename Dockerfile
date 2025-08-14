@@ -37,7 +37,7 @@ RUN apt update && \
             htop \
             nmap \
             dnsutils \
-            netcat \
+            netcat-traditional \
             kafkacat \
             net-tools \
             mysql-client \
