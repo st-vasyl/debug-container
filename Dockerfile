@@ -87,6 +87,7 @@ RUN if [ $TARGETARCH == "amd64" ]; then ARCH="x86_64"; else ARCH="arm64" ; fi &&
     mv /tmp/ghz /usr/local/bin && chmod +x /usr/local/bin/ghz    
 
 RUN wget -qO /usr/local/bin/grpc_health_probe https://github.com/grpc-ecosystem/grpc-health-probe/releases/download/v${GRPC_HEALTH_PROBE_VERSION}/grpc_health_probe-linux-${TARGETARCH} && \
+    wget https://raw.githubusercontent.com/grpc/grpc-proto/master/grpc/health/v1/health.proto -O /tmp/health.proto && \
     chmod +x /usr/local/bin/grpc_health_probe
 
 ### Install MongoDB client
@@ -118,9 +119,7 @@ RUN wget "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -O /tmp/awsc
 ### Install gcloud cli
 RUN curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | gpg --dearmor -o /usr/share/keyrings/cloud.google.gpg && \
     echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main" | tee -a /etc/apt/sources.list.d/google-cloud-sdk.list && \
-    apt update && apt install -y google-cloud-cli && \
-
-ADD --chown=debug:debug https://raw.githubusercontent.com/grpc/grpc-proto/master/grpc/health/v1/health.proto /tmp/health.proto
+    apt update && apt install -y google-cloud-cli
 
 WORKDIR /home/debug
 USER debug
