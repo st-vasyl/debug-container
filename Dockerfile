@@ -1,15 +1,15 @@
-FROM ubuntu:jammy
+FROM ubuntu:noble
 LABEL MAINTAINER "Vasyl Stetsuryn <vasyl@vasyl.org>"
 
 ARG TARGETARCH
 ARG TARGETPLATFORM
 ENV DEBIAN_FRONTEND noninteractive
 ENV TZ Etc/UTC
-ENV HELM_VERSION 3.15.2
-ENV GRPCURL_VERSION 1.9.1
+ENV HELM_VERSION 3.17.0
+ENV GRPCURL_VERSION 1.9.3
 ENV GHZ_VERSION 0.120.0
-ENV GRPC_HEALTH_PROBE_VERSION 0.4.28
-ENV KUBECTL_VERSION 1.30.2
+ENV GRPC_HEALTH_PROBE_VERSION 0.4.40
+ENV KUBECTL_VERSION 1.33.4
 
 RUN apt update && \
     apt -y install sudo \
@@ -90,8 +90,8 @@ RUN wget -qO /usr/local/bin/grpc_health_probe https://github.com/grpc-ecosystem/
     chmod +x /usr/local/bin/grpc_health_probe
 
 ### Install MongoDB client
-RUN curl -fsSL https://www.mongodb.org/static/pgp/server-6.0.asc|sudo gpg --dearmor -o /etc/apt/trusted.gpg.d/mongodb-6.gpg && \
-    echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu jammy/mongodb-org/6.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org.list && \
+RUN curl -fsSL https://www.mongodb.org/static/pgp/server-8.0.asc|sudo gpg --dearmor -o /etc/apt/trusted.gpg.d/mongodb-8.gpg && \
+    echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu noble/mongodb-org/8.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org.list && \
     apt update && apt -y install mongodb-org-shell mongodb-org-tools mongodb-atlas mongodb-mongosh
 
 ### Install Vault and Consul
@@ -109,6 +109,11 @@ RUN curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings
     tee /etc/apt/sources.list.d/docker.list > /dev/null && \
     apt update && \
     apt install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+
+### Install gcloud cli
+RUN curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | gpg --dearmor -o /usr/share/keyrings/cloud.google.gpg && \
+    echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main" | tee -a /etc/apt/sources.list.d/google-cloud-sdk.list && \
+    apt update && apt install -y google-cloud-cli && \
 
 ADD --chown=debug:debug https://raw.githubusercontent.com/grpc/grpc-proto/master/grpc/health/v1/health.proto /tmp/health.proto
 
