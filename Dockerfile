@@ -1,27 +1,29 @@
-FROM ubuntu:jammy
+FROM ubuntu:noble
 LABEL MAINTAINER "Vasyl Stetsuryn <vasyl@vasyl.org>"
 
 ARG TARGETARCH
 ARG TARGETPLATFORM
 ENV DEBIAN_FRONTEND noninteractive
 ENV TZ Etc/UTC
-ENV HELM_VERSION 3.15.2
-ENV GRPCURL_VERSION 1.9.1
+ENV HELM_VERSION 3.17.0
+ENV GRPCURL_VERSION 1.9.3
 ENV GHZ_VERSION 0.120.0
-ENV GRPC_HEALTH_PROBE_VERSION 0.4.28
-ENV KUBECTL_VERSION 1.30.2
+ENV GRPC_HEALTH_PROBE_VERSION 0.4.40
+ENV KUBECTL_VERSION 1.33.4
 
 RUN apt update && \
+    apt -y install software-properties-common && \
+    add-apt-repository --yes --update ppa:ansible/ansible && \
     apt -y install sudo \
-            python3 \
+            python3-full \
             python3-dev \
             python3-pip \
+            ansible \
             apt-transport-https \
             ca-certificates \
             curl \
             git \
             zlib1g-dev \
-            software-properties-common \
             gnupg \
             gnupg2 \
             libstdc++6 \
@@ -37,7 +39,7 @@ RUN apt update && \
             htop \
             nmap \
             dnsutils \
-            netcat \
+            netcat-traditional \
             kafkacat \
             net-tools \
             mysql-client \
@@ -60,10 +62,8 @@ RUN apt update && \
             libc6-dev && \
     rm -rf /var/cache/apt/*
 
-RUN pip3 install python-hglib requests pika hvac ansible python-consul openshift boto3 requests_aws4auth awscli
-
-RUN groupadd --gid 1000 debug && \
-    adduser --gid 1000 --uid 1000 --disabled-password --system --home /home/debug debug && \
+RUN groupadd --gid 1001 debug && \
+    adduser --gid 1001 --uid 1001 --disabled-password --system --home /home/debug debug && \
     echo "debug ALL=(ALL:ALL) NOPASSWD:ALL" >> /etc/sudoers
 
 ### Install kubectl
@@ -87,11 +87,12 @@ RUN if [ $TARGETARCH == "amd64" ]; then ARCH="x86_64"; else ARCH="arm64" ; fi &&
     mv /tmp/ghz /usr/local/bin && chmod +x /usr/local/bin/ghz    
 
 RUN wget -qO /usr/local/bin/grpc_health_probe https://github.com/grpc-ecosystem/grpc-health-probe/releases/download/v${GRPC_HEALTH_PROBE_VERSION}/grpc_health_probe-linux-${TARGETARCH} && \
+    wget https://raw.githubusercontent.com/grpc/grpc-proto/master/grpc/health/v1/health.proto -O /tmp/health.proto && \
     chmod +x /usr/local/bin/grpc_health_probe
 
 ### Install MongoDB client
-RUN curl -fsSL https://www.mongodb.org/static/pgp/server-6.0.asc|sudo gpg --dearmor -o /etc/apt/trusted.gpg.d/mongodb-6.gpg && \
-    echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu jammy/mongodb-org/6.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org.list && \
+RUN curl -fsSL https://www.mongodb.org/static/pgp/server-8.0.asc|sudo gpg --dearmor -o /etc/apt/trusted.gpg.d/mongodb-8.gpg && \
+    echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu noble/mongodb-org/8.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org.list && \
     apt update && apt -y install mongodb-org-shell mongodb-org-tools mongodb-atlas mongodb-mongosh
 
 ### Install Vault and Consul
@@ -100,7 +101,25 @@ RUN curl -fsSL https://apt.releases.hashicorp.com/gpg | apt-key add - && \
     apt install vault consul && \
     rm -rf /var/cache/apt/*
 
-ADD --chown=debug:debug https://raw.githubusercontent.com/grpc/grpc-proto/master/grpc/health/v1/health.proto /tmp/health.proto
+### Install Docker
+RUN curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc && \
+    chmod a+r /etc/apt/keyrings/docker.asc && \
+    echo \
+    "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
+    $(. /etc/os-release && echo "${UBUNTU_CODENAME:-$VERSION_CODENAME}") stable" | \
+    tee /etc/apt/sources.list.d/docker.list > /dev/null && \
+    apt update && \
+    apt install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+
+### Install aws cli
+RUN wget "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -O /tmp/awscliv2.zip && \
+    unzip /tmp/awscliv2.zip -d /tmp/ && \
+    /tmp/aws/install -i /usr/local/aws-cli -b /usr/local/bin
+
+### Install gcloud cli
+RUN curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | gpg --dearmor -o /usr/share/keyrings/cloud.google.gpg && \
+    echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main" | tee -a /etc/apt/sources.list.d/google-cloud-sdk.list && \
+    apt update && apt install -y google-cloud-cli
 
 WORKDIR /home/debug
 USER debug
