@@ -12,7 +12,7 @@ ENV GRPC_HEALTH_PROBE_VERSION 0.4.40
 ENV KUBECTL_VERSION 1.33.4
 
 RUN apt update && \
-    apt install software-properties-common && \
+    apt -y install software-properties-common && \
     add-apt-repository --yes --update ppa:ansible/ansible && \
     apt -y install sudo \
             python3-full \
@@ -24,7 +24,6 @@ RUN apt update && \
             curl \
             git \
             zlib1g-dev \
-            software-properties-common \
             gnupg \
             gnupg2 \
             libstdc++6 \
