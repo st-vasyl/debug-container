@@ -39,7 +39,7 @@ spec:
       - name: DOCKER_HOST
         value: unix:///var/run/docker.sock
       - name: DOCKER_GROUP_GID
-        value: "1000"
+        value: "1001"
       resources:
         limits:
           cpu: 2

@@ -62,8 +62,8 @@ RUN apt update && \
             libc6-dev && \
     rm -rf /var/cache/apt/*
 
-RUN groupadd --gid 1000 debug && \
-    adduser --gid 1000 --uid 1000 --disabled-password --system --home /home/debug debug && \
+RUN groupadd --gid 1001 debug && \
+    adduser --gid 1001 --uid 1001 --disabled-password --system --home /home/debug debug && \
     echo "debug ALL=(ALL:ALL) NOPASSWD:ALL" >> /etc/sudoers
 
 ### Install kubectl
