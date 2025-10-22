@@ -5,11 +5,11 @@ ARG TARGETARCH
 ARG TARGETPLATFORM
 ENV DEBIAN_FRONTEND noninteractive
 ENV TZ Etc/UTC
-ENV HELM_VERSION 3.17.0
+ENV HELM_VERSION 3.19.0
 ENV GRPCURL_VERSION 1.9.3
 ENV GHZ_VERSION 0.120.0
-ENV GRPC_HEALTH_PROBE_VERSION 0.4.40
-ENV KUBECTL_VERSION 1.33.4
+ENV GRPC_HEALTH_PROBE_VERSION 0.4.41
+ENV KUBECTL_VERSION 1.34.1
 
 RUN apt update && \
     apt -y install software-properties-common && \
@@ -43,7 +43,6 @@ RUN apt update && \
             kafkacat \
             net-tools \
             mysql-client \
-            redis-tools \
             s3cmd \
             groff \
             telnet \
@@ -93,7 +92,8 @@ RUN wget -qO /usr/local/bin/grpc_health_probe https://github.com/grpc-ecosystem/
 ### Install MongoDB client
 RUN curl -fsSL https://www.mongodb.org/static/pgp/server-8.0.asc|sudo gpg --dearmor -o /etc/apt/trusted.gpg.d/mongodb-8.gpg && \
     echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu noble/mongodb-org/8.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org.list && \
-    apt update && apt -y install mongodb-org-shell mongodb-org-tools mongodb-atlas mongodb-mongosh
+    apt update && apt -y install mongodb-org-shell mongodb-org-tools mongodb-atlas mongodb-mongosh && \
+    rm -rf /var/cache/apt/*
 
 ### Install Vault and Consul
 RUN curl -fsSL https://apt.releases.hashicorp.com/gpg | apt-key add - && \
@@ -109,7 +109,8 @@ RUN curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings
     $(. /etc/os-release && echo "${UBUNTU_CODENAME:-$VERSION_CODENAME}") stable" | \
     tee /etc/apt/sources.list.d/docker.list > /dev/null && \
     apt update && \
-    apt install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+    apt install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin && \
+    rm -rf /var/cache/apt/*
 
 ### Install aws cli
 RUN wget "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -O /tmp/awscliv2.zip && \
@@ -119,7 +120,13 @@ RUN wget "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -O /tmp/awsc
 ### Install gcloud cli
 RUN curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | gpg --dearmor -o /usr/share/keyrings/cloud.google.gpg && \
     echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main" | tee -a /etc/apt/sources.list.d/google-cloud-sdk.list && \
-    apt update && apt install -y google-cloud-cli
+    apt update && apt install -y google-cloud-cli && rm -rf /var/cache/apt/*
+
+### Install redis-cli
+RUN curl -fsSL https://packages.redis.io/gpg | gpg --dearmor -o /usr/share/keyrings/redis-archive-keyring.gpg && \
+    chmod 644 /usr/share/keyrings/redis-archive-keyring.gpg && \
+    echo "deb [signed-by=/usr/share/keyrings/redis-archive-keyring.gpg] https://packages.redis.io/deb $(lsb_release -cs) main" | tee /etc/apt/sources.list.d/redis.list && \
+    apt update && apt install -y redis-tools && rm -rf /var/cache/apt/*
 
 WORKDIR /home/debug
 USER debug
