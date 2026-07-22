@@ -51,11 +51,9 @@ RUN apt update && \
             libapr1 \
             libapr1-dev \
             libaprutil1 \
-            libxml2 \
-            libxml2-dev \
+            libxml2-16 \
             pcre2-utils \
             libpcre2-dev \
-            libpcre3-dev \
             libffi-dev \
             libssl-dev \
             libc6-dev && \
@@ -76,28 +74,28 @@ RUN wget "https://get.helm.sh/helm-v${HELM_VERSION}-linux-${TARGETARCH}.tar.gz" 
     mv /tmp/linux-${TARGETARCH}/helm /usr/local/bin/helm
 
 ### Install grpcurl binary
-SHELL ["/bin/bash", "-c"] 
+SHELL ["/bin/bash", "-c"]
 RUN if [ $TARGETARCH == "amd64" ]; then ARCH="x86_64"; else ARCH="arm64" ; fi && \
     wget "https://github.com/fullstorydev/grpcurl/releases/download/v${GRPCURL_VERSION}/grpcurl_${GRPCURL_VERSION}_linux_${ARCH}.tar.gz" -O /tmp/grpcurl.tar.gz && \
     tar zxfv /tmp/grpcurl.tar.gz -C /tmp/ && \
     mv /tmp/grpcurl /usr/local/bin/grpcurl && \
     chown root:root /usr/local/bin/grpcurl && \
     curl -sSL "https://github.com/bojand/ghz/releases/download/v${GHZ_VERSION}/ghz-linux-${ARCH}.tar.gz" | tar xz -C /tmp && \
-    mv /tmp/ghz /usr/local/bin && chmod +x /usr/local/bin/ghz    
+    mv /tmp/ghz /usr/local/bin && chmod +x /usr/local/bin/ghz
 
 RUN wget -qO /usr/local/bin/grpc_health_probe https://github.com/grpc-ecosystem/grpc-health-probe/releases/download/v${GRPC_HEALTH_PROBE_VERSION}/grpc_health_probe-linux-${TARGETARCH} && \
     wget https://raw.githubusercontent.com/grpc/grpc-proto/master/grpc/health/v1/health.proto -O /tmp/health.proto && \
     chmod +x /usr/local/bin/grpc_health_probe
 
 ### Install MongoDB client
-RUN curl -fsSL https://www.mongodb.org/static/pgp/server-8.2.asc|sudo gpg --dearmor -o /etc/apt/trusted.gpg.d/mongodb-8.gpg && \
-    echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu noble/mongodb-org/8.2 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org.list && \
+RUN curl -fsSL https://www.mongodb.org/static/pgp/server-8.0.asc|sudo gpg --dearmor -o /etc/apt/trusted.gpg.d/mongodb-8.gpg && \
+    echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu noble/mongodb-org/8.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org.list && \
     apt update && apt -y install mongodb-org-shell mongodb-org-tools mongodb-atlas mongodb-mongosh && \
     rm -rf /var/cache/apt/*
 
 ### Install Vault and Consul
-RUN curl -fsSL https://apt.releases.hashicorp.com/gpg | apt-key add - && \
-    apt-add-repository "deb https://apt.releases.hashicorp.com $(lsb_release -cs) main" && \
+RUN curl -fsSL https://apt.releases.hashicorp.com/gpg | gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg && \
+    echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com resolute main" | tee /etc/apt/sources.list.d/hashicorp.list && \
     apt update && apt install -y vault consul && \
     rm -rf /var/cache/apt/*
 
